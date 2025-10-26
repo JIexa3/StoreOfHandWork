@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window x:Class="StoreOfHandWork.StatisticsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Статистика" Height="600" Width="800"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <TextBlock Text="Статистика магазина"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Margin="0,0,0,20"/>
+
+        <!-- Основные показатели -->
+        <StackPanel Grid.Row="1">
+            <GroupBox Header="Основные показатели" Margin="0,0,0,20">
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="5">
+                        <TextBlock Text="Всего заказов:"
+                                 FontWeight="Bold"/>
+                        <TextBlock x:Name="TotalOrdersText"
+                                 Text="0"
+                                 FontSize="24"
+                                 Margin="0,5"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Margin="5">
+                        <TextBlock Text="Общая сумма продаж:"
+                                 FontWeight="Bold"/>
+                        <TextBlock x:Name="TotalSalesText"
+                                 Text="0 ₽"
+                                 FontSize="24"
+                                 Margin="0,5"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Margin="5">
+                        <TextBlock Text="Активных пользователей:"
+                                 FontWeight="Bold"/>
+                        <TextBlock x:Name="ActiveUsersText"
+                                 Text="0"
+                                 FontSize="24"
+                                 Margin="0,5"/>
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+
+            <!-- Популярные товары -->
+            <GroupBox Header="Популярные товары" Margin="0,0,0,20">
+                <DataGrid x:Name="TopProductsGrid"
+                         AutoGenerateColumns="False"
+                         IsReadOnly="True"
+                         Height="150">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Название" 
+                                          Binding="{Binding Name}" 
+                                          Width="*"/>
+                        <DataGridTextColumn Header="Категория" 
+                                          Binding="{Binding Category.Name}" 
+                                          Width="150"/>
+                        <DataGridTextColumn Header="Количество продаж" 
+                                          Binding="{Binding SalesCount}" 
+                                          Width="150"/>
+                        <DataGridTextColumn Header="Сумма продаж" 
+                                          Binding="{Binding TotalSales, StringFormat={}{0:C}, ConverterCulture=ru-RU}" 
+                                          Width="150"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </GroupBox>
+        </StackPanel>
+
+        <!-- Статистика по категориям -->
+        <GroupBox Grid.Row="2" Header="Статистика по категориям">
+            <DataGrid x:Name="CategoryStatsGrid"
+                     AutoGenerateColumns="False"
+                     IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Категория" 
+                                      Binding="{Binding Name}" 
+                                      Width="*"/>
+                    <DataGridTextColumn Header="Количество товаров" 
+                                      Binding="{Binding ProductCount}" 
+                                      Width="150"/>
+                    <DataGridTextColumn Header="Количество продаж" 
+                                      Binding="{Binding SalesCount}" 
+                                      Width="150"/>
+                    <DataGridTextColumn Header="Сумма продаж" 
+                                      Binding="{Binding TotalSales, StringFormat={}{0:C}, ConverterCulture=ru-RU}" 
+                                      Width="150"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+    </Grid>
+</Window>

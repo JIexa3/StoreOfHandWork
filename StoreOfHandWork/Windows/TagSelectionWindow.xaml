@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window x:Class="StoreOfHandWork.Windows.TagSelectionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Выбор тегов" 
+        Height="500" Width="400"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F5F5">
+    <Window.Resources>
+        <Style x:Key="HeaderTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#388E3C"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <Style x:Key="CancelButtonStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
+            <Setter Property="Background" Value="#757575"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#616161"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    
+    <Border Background="White"
+            CornerRadius="10"
+            Margin="20">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="10" 
+                              ShadowDepth="0" 
+                              Opacity="0.1"/>
+        </Border.Effect>
+        
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <TextBlock Text="Выберите теги для товара"
+                       Style="{StaticResource HeaderTextStyle}"/>
+            
+            <ListView Grid.Row="1" 
+                      x:Name="TagsListView"
+                      Margin="0,0,0,15"
+                      SelectionMode="Multiple">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox IsChecked="{Binding IsSelected}" 
+                                      VerticalAlignment="Center"
+                                      Margin="0,0,10,0"/>
+                            <TextBlock Text="{Binding Name}" 
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            
+            <StackPanel Grid.Row="2" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Right">
+                <Button Content="Отмена"
+                        Style="{StaticResource CancelButtonStyle}"
+                        Click="CancelButton_Click"
+                        Width="100"
+                        Margin="0,0,10,0"/>
+                
+                <Button Content="Выбрать"
+                        Style="{StaticResource ButtonStyle}"
+                        Click="SelectButton_Click"
+                        Width="100"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

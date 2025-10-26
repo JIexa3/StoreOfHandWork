@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page x:Class="StoreOfHandWork.Pages.CategoriesManagementPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="Управление категориями">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Верхняя панель с кнопкой добавления -->
+        <Button Content="Добавить категорию" 
+                Click="AddCategory_Click"
+                HorizontalAlignment="Left"
+                Margin="10"
+                Padding="10,5"
+                Background="#2196F3"
+                Foreground="White"
+                Grid.Row="0">
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#1976D2"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+
+        <!-- DataGrid с категориями -->
+        <DataGrid x:Name="CategoriesDataGrid" 
+                  Grid.Row="1" 
+                  Margin="10"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  RowEditEnding="CategoriesDataGrid_RowEditEnding">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" 
+                                  Binding="{Binding Id}" 
+                                  IsReadOnly="True"
+                                  Width="50"/>
+                <DataGridTextColumn Header="Название" 
+                                  Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" 
+                                  Width="*"/>
+                <DataGridTextColumn Header="Описание" 
+                                  Binding="{Binding Description, UpdateSourceTrigger=PropertyChanged}" 
+                                  Width="2*"/>
+                <DataGridTemplateColumn Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Сохранить" 
+                                        Click="SaveCategory_Click"
+                                        Background="#2196F3"
+                                        Foreground="White"
+                                        Padding="10,5"
+                                        Margin="2">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#1976D2"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Content="Удалить" 
+                                        Click="DeleteCategory_Click"
+                                        Background="#f44336"
+                                        Foreground="White"
+                                        Padding="10,5"
+                                        Margin="2">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#d32f2f"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Page>

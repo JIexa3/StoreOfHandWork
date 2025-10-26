@@ -1,0 +1,81 @@
+<Application x:Class="StoreOfHandWork.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:StoreOfHandWork"
+             xmlns:converters="clr-namespace:StoreOfHandWork.Converters">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/CommonStyles.xaml"/>
+                <ResourceDictionary Source="/Styles/ButtonStyles.xaml"/>
+                <ResourceDictionary Source="/Styles/DataGridStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Цвета -->
+            <SolidColorBrush x:Key="PrimaryColor" Color="#2196F3"/>
+            <SolidColorBrush x:Key="SecondaryColor" Color="#FFC107"/>
+            <SolidColorBrush x:Key="BackgroundColor" Color="#FFFFFF"/>
+            <SolidColorBrush x:Key="SurfaceColor" Color="#F5F5F5"/>
+            <SolidColorBrush x:Key="TextPrimaryColor" Color="#212121"/>
+            <SolidColorBrush x:Key="TextSecondaryColor" Color="#757575"/>
+            <SolidColorBrush x:Key="ErrorColor" Color="#F44336"/>
+
+            <!-- Стили для TextBox -->
+            <Style TargetType="TextBox">
+                <Setter Property="Height" Value="40"/>
+                <Setter Property="Padding" Value="10,0"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="BorderBrush" Value="#E0E0E0"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Style.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Style.Resources>
+            </Style>
+
+            <!-- Стили для PasswordBox -->
+            <Style TargetType="PasswordBox">
+                <Setter Property="Height" Value="40"/>
+                <Setter Property="Padding" Value="10,0"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="BorderBrush" Value="#E0E0E0"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Style.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Style.Resources>
+            </Style>
+
+            <Style x:Key="ButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="#2ecc71"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Padding" Value="15,5"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="3">
+                                <ContentPresenter HorizontalAlignment="Center" 
+                                                  VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#27ae60"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <converters:StatusToCollectButtonVisibilityConverter x:Key="StatusToCollectButtonVisibilityConverter"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

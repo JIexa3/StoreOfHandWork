@@ -1,0 +1,128 @@
+<Page x:Class="StoreOfHandWork.Pages.ReturnPolicyManagementPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:local="clr-namespace:StoreOfHandWork.Pages"
+      mc:Ignorable="d"
+      Title="Правила возврата">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <Grid Grid.Row="0" Margin="20,20,20,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Column="0" Text="Управление правилами возврата" FontSize="24" FontWeight="Bold"/>
+            
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button x:Name="NewPolicyButton" Content="Новые правила" Width="120" Margin="0,0,10,0" Click="NewPolicyButton_Click"/>
+                <Button x:Name="SaveButton" Content="Сохранить" Width="100" Click="SaveButton_Click"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Основное содержимое -->
+        <TabControl Grid.Row="1" Margin="20,10,20,10">
+            <!-- Активные правила -->
+            <TabItem Header="Активные правила">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid x:Name="ActivePolicyGrid" Margin="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Название правил -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Название:" FontWeight="Bold" Margin="0,10,10,10"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="TitleTextBox" Margin="0,10,0,10"/>
+                        
+                        <!-- Срок возврата -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Срок возврата (дней):" FontWeight="Bold" Margin="0,10,10,10"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="ReturnPeriodTextBox" Margin="0,10,0,10" PreviewTextInput="NumberValidationTextBox"/>
+                        
+                        <!-- Общие условия -->
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Общие условия:" FontWeight="Bold" Margin="0,10,10,10" VerticalAlignment="Top"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" x:Name="GeneralConditionsTextBox" TextWrapping="Wrap" 
+                                 AcceptsReturn="True" Height="100" Margin="0,10,0,10"/>
+                        
+                        <!-- Исключения -->
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Исключения:" FontWeight="Bold" Margin="0,10,10,10" VerticalAlignment="Top"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" x:Name="ExcludedCategoriesTextBox" TextWrapping="Wrap" 
+                                 AcceptsReturn="True" Height="80" Margin="0,10,0,10"/>
+                        
+                        <!-- Условия возврата средств -->
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Условия возврата:" FontWeight="Bold" Margin="0,10,10,10" VerticalAlignment="Top"/>
+                        <TextBox Grid.Row="4" Grid.Column="1" x:Name="RefundPolicyTextBox" TextWrapping="Wrap" 
+                                 AcceptsReturn="True" Height="80" Margin="0,10,0,10"/>
+                        
+                        <!-- Условия обмена товара -->
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Условия обмена:" FontWeight="Bold" Margin="0,10,10,10" VerticalAlignment="Top"/>
+                        <TextBox Grid.Row="5" Grid.Column="1" x:Name="ExchangePolicyTextBox" TextWrapping="Wrap" 
+                                 AcceptsReturn="True" Height="80" Margin="0,10,0,10"/>
+                        
+                        <!-- Статус и информация -->
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Активно:" FontWeight="Bold" Margin="0,10,10,10"/>
+                        <CheckBox Grid.Row="6" Grid.Column="1" x:Name="IsActiveCheckBox" IsChecked="True" 
+                                  VerticalAlignment="Center" Margin="0,10,0,10"/>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+            
+            <!-- История правил -->
+            <TabItem Header="История правил">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Список истории правил -->
+                    <DataGrid Grid.Row="0" x:Name="PolicyHistoryDataGrid" AutoGenerateColumns="False" 
+                              IsReadOnly="True" SelectionMode="Single" SelectionChanged="PolicyHistoryDataGrid_SelectionChanged">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                            <DataGridTextColumn Header="Название" Binding="{Binding Title}" Width="*"/>
+                            <DataGridTextColumn Header="Срок возврата" Binding="{Binding ReturnPeriodDays}" Width="100"/>
+                            <DataGridTextColumn Header="Последнее обновление" 
+                                                Binding="{Binding LastUpdated, StringFormat={}{0:dd.MM.yyyy HH:mm}}" 
+                                                Width="150"/>
+                            <DataGridTextColumn Header="Кем обновлено" Binding="{Binding UpdatedBy}" Width="150"/>
+                            <DataGridCheckBoxColumn Header="Активно" Binding="{Binding IsActive}" Width="70"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    
+                    <!-- Кнопки управления историей -->
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                        <Button x:Name="ViewHistoryButton" Content="Просмотреть" Width="100" Margin="0,0,10,0" 
+                                Click="ViewHistoryButton_Click"/>
+                        <Button x:Name="ActivateHistoryButton" Content="Активировать" Width="100" 
+                                Click="ActivateHistoryButton_Click"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <!-- Статусная строка -->
+        <StatusBar Grid.Row="2" Height="25">
+            <StatusBarItem>
+                <TextBlock x:Name="StatusTextBlock"/>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Page>

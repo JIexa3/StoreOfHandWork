@@ -1,0 +1,150 @@
+<Page x:Class="StoreOfHandWork.Pages.ReportsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:StoreOfHandWork.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="700" d:DesignWidth="900"
+      Loaded="Page_Loaded"
+      Title="Отчеты Word">
+
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" 
+                   Text="Генерация отчетов" 
+                   FontSize="24" 
+                   FontWeight="Bold" 
+                   Margin="20,20,20,10"/>
+
+        <ScrollViewer Grid.Row="1" Margin="20,0,20,20">
+            <StackPanel>
+                <GroupBox Header="Отчеты по товарам" Margin="0,0,0,20" Padding="10">
+                    <StackPanel>
+                        <TextBlock Text="Формирование отчета по всем товарам в магазине" 
+                                   Margin="0,0,0,10" 
+                                   TextWrapping="Wrap"/>
+                        
+                        <DockPanel LastChildFill="False" Margin="0,0,0,10">
+                            <CheckBox x:Name="IncludeCategoriesCheckBox" 
+                                      Content="Включить категории" 
+                                      IsChecked="True"
+                                      DockPanel.Dock="Left"
+                                      Margin="0,0,20,0"/>
+                            
+                            <CheckBox x:Name="IncludeStockCheckBox" 
+                                      Content="Включить информацию о наличии" 
+                                      IsChecked="True"
+                                      DockPanel.Dock="Left"/>
+                        </DockPanel>
+                        
+                        <Button x:Name="GenerateProductsReportButton" 
+                                Content="Сформировать отчет по товарам" 
+                                Padding="10,5" 
+                                Margin="0,10,0,0"
+                                HorizontalAlignment="Left"
+                                Background="#3498db"
+                                Foreground="White"
+                                BorderThickness="0"
+                                Click="GenerateProductsReportButton_Click"  Width="264" Height="25"/>
+                    </StackPanel>
+                </GroupBox>
+                
+                <GroupBox Header="Отчеты по заказам" Margin="0,0,0,20" Padding="10">
+                    <StackPanel>
+                        <TextBlock Text="Формирование отчета по заказам за выбранный период" 
+                                   Margin="0,0,0,10" 
+                                   TextWrapping="Wrap"/>
+                        
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Text="С:" 
+                                       Grid.Column="0" 
+                                       Grid.Row="0" 
+                                       VerticalAlignment="Center" 
+                                       Margin="0,0,10,0"/>
+                            
+                            <DatePicker x:Name="StartDatePicker" 
+                                        Grid.Column="1" 
+                                        Grid.Row="0" 
+                                        Margin="0,0,20,0"
+                                        SelectedDate="{Binding Path=StartDate}"/>
+                            
+                            <TextBlock Text="По:" 
+                                       Grid.Column="2" 
+                                       Grid.Row="0" 
+                                       VerticalAlignment="Center" 
+                                       Margin="0,0,10,0"/>
+                            
+                            <DatePicker x:Name="EndDatePicker" 
+                                        Grid.Column="3" 
+                                        Grid.Row="0"
+                                        SelectedDate="{Binding Path=EndDate}"/>
+                        </Grid>
+                        
+                        <DockPanel LastChildFill="False" Margin="0,10,0,10">
+                            <CheckBox x:Name="IncludeCustomerInfoCheckBox" 
+                                      Content="Включить информацию о клиентах" 
+                                      IsChecked="True"
+                                      DockPanel.Dock="Left"
+                                      Margin="0,0,20,0"/>
+                            
+                            <CheckBox x:Name="IncludeOrderDetailsCheckBox" 
+                                      Content="Включить детали заказов" 
+                                      IsChecked="True"
+                                      DockPanel.Dock="Left"/>
+                        </DockPanel>
+                        
+                        <Button x:Name="GenerateOrdersReportButton" 
+                                Content="Сформировать отчет по заказам" 
+                                Padding="10,5" 
+                                Margin="0,10,0,0"
+                                HorizontalAlignment="Left"
+                                Background="#3498db"
+                                Foreground="White"
+                                BorderThickness="0"
+                                Click="GenerateOrdersReportButton_Click" Width="264" Height="25"/>
+                    </StackPanel>
+                </GroupBox>
+                
+                <GroupBox Header="Отчет по статистике продаж" Margin="0,0,0,20" Padding="10">
+                    <StackPanel>
+                        <TextBlock Text="Формирование отчета по статистике продаж за выбранный период" 
+                                   Margin="0,0,0,10" 
+                                   TextWrapping="Wrap"/>
+                        
+                        <Button x:Name="GenerateSalesStatisticsReportButton" 
+                                Content="Сформировать отчет по статистике продаж" 
+                                Padding="10,5" 
+                                Margin="0,10,0,0"
+                                HorizontalAlignment="Left"
+                                Background="#3498db"
+                                Foreground="White"
+                                BorderThickness="0"
+                                Click="GenerateSalesStatisticsReportButton_Click" Width="264" Height="25"/>
+                    </StackPanel>
+                </GroupBox>
+                
+                <TextBlock x:Name="StatusTextBlock" 
+                           Foreground="Green" 
+                           FontWeight="Bold" 
+                           Margin="0,10,0,0"
+                           Visibility="Collapsed"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

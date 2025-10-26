@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window x:Class="StoreOfHandWork.OrderCollectionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Сборка заказа" 
+        Height="600" 
+        Width="800"
+        WindowStartupLocation="CenterScreen">
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Информация о заказе -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock x:Name="OrderNumberText"
+                     FontSize="20"
+                     FontWeight="Bold"
+                     Margin="0,0,0,10"/>
+            
+            <TextBlock x:Name="OrderDateText"
+                     FontSize="16"
+                     Margin="0,0,0,20"/>
+        </StackPanel>
+
+        <!-- Список товаров -->
+        <DataGrid x:Name="ItemsGrid" 
+                  Grid.Row="1"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="False"
+                  SelectionMode="Single">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Артикул" 
+                                  Binding="{Binding Product.ArticleNumber}"
+                                  IsReadOnly="True"/>
+                <DataGridTextColumn Header="Наименование" 
+                                  Binding="{Binding Product.Name}"
+                                  IsReadOnly="True"/>
+                <DataGridTextColumn Header="Количество" 
+                                  Binding="{Binding Quantity}"
+                                  IsReadOnly="True"/>
+                <DataGridTextColumn Header="Остаток на складе" 
+                                  Binding="{Binding Product.StockQuantity}"
+                                  IsReadOnly="True"/>
+                <DataGridCheckBoxColumn Header="Собран" 
+                                      Binding="{Binding IsCollected, UpdateSourceTrigger=PropertyChanged}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Кнопки -->
+        <StackPanel Grid.Row="2" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    Margin="0,20,0,0">
+            <Button Content="Сохранить" 
+                    Width="120"
+                    Height="30"
+                    Margin="0,0,10,0"
+                    Click="SaveButton_Click"/>
+            
+            <Button Content="Отмена" 
+                    Width="120"
+                    Height="30"
+                    Click="CancelButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window> 

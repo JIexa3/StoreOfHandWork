@@ -1,0 +1,390 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using Microsoft.EntityFrameworkCore;
+using StoreOfHandWork.Data;
+using StoreOfHandWork.Models;
+
+namespace StoreOfHandWork.Pages
+{
+    /// <summary>
+    /// Логика взаимодействия для ReturnRequestsPage.xaml
+    /// </summary>
+    public partial class ReturnRequestsPage : Page
+    {
+        private readonly ApplicationDbContext _context;
+        private User _currentUser;
+        private List<Order> _userOrders = new List<Order>();
+        private ReturnPolicy _activeReturnPolicy = new ReturnPolicy();
+
+        public ReturnRequestsPage(User currentUser)
+        {
+            // Инициализация контекста базы данных - сначала создаем контекст, только потом инициализируем UI
+            _context = new ApplicationDbContext();
+            _currentUser = currentUser;
+            
+            // Инициализация компонентов интерфейса
+            InitializeComponent();
+            
+            try
+            {
+                // Загрузка начальных данных
+                LoadInitialData();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке данных: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Загрузка начальных данных
+        private void LoadInitialData()
+        {
+            // Загрузка доступных причин возврата в выпадающий список
+            if (ReturnReasonComboBox != null)
+            {
+                ReturnReasonComboBox.ItemsSource = Enum.GetValues(typeof(ReturnReason))
+                    .Cast<ReturnReason>()
+                    .Select(r => new { Value = r, Display = GetReturnReasonDisplay(r) })
+                    .ToList();
+                ReturnReasonComboBox.DisplayMemberPath = "Display";
+                ReturnReasonComboBox.SelectedValuePath = "Value";
+                ReturnReasonComboBox.SelectedIndex = 0;
+            }
+
+            // Инициализация ComboBox для фильтрации и сортировки
+            if (StatusFilterComboBox != null)
+            {
+                StatusFilterComboBox.ItemsSource = Enum.GetValues(typeof(ReturnStatus))
+                    .Cast<ReturnStatus>()
+                    .Select(s => new { Value = s, Display = s.ToString() })
+                    .ToList();
+                StatusFilterComboBox.DisplayMemberPath = "Display";
+                StatusFilterComboBox.SelectedValuePath = "Value";
+                StatusFilterComboBox.SelectedIndex = 0;
+            }
+
+            if (SortComboBox != null)
+            {
+                SortComboBox.ItemsSource = new List<string> { "Дата (новые)", "Дата (старые)", "Статус" };
+                SortComboBox.SelectedIndex = 0;
+            }
+
+            // Загрузка заказов пользователя
+            LoadUserOrders();
+            
+            // Загрузка политики возврата
+            LoadReturnPolicy();
+            
+            // Загрузка запросов пользователя на возврат
+            LoadUserReturnRequests();
+        }
+
+        // Загрузка заказов пользователя
+        private void LoadUserOrders()
+        {
+            try
+            {
+                if (OrdersComboBox == null)
+                    return;
+
+                _userOrders = _context.Orders
+                    .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
+                    .Where(o => o.UserId == _currentUser.Id && o.Status == OrderStatus.Delivered)
+                    .OrderByDescending(o => o.OrderDate)
+                    .ToList();
+
+                OrdersComboBox.ItemsSource = _userOrders;
+                OrdersComboBox.DisplayMemberPath = "OrderNumber";
+                OrdersComboBox.SelectedValuePath = "Id";
+                
+                if (_userOrders.Count > 0)
+                    OrdersComboBox.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке заказов: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Загрузка активной политики возврата
+        private void LoadReturnPolicy()
+        {
+            try
+            {
+                // Проверка на инициализацию UI элемента
+                if (ReturnPolicyTextBlock == null)
+                    return;
+                    
+                var activePolicy = _context.ReturnPolicies
+                    .Where(rp => rp.IsActive)
+                    .OrderByDescending(rp => rp.LastUpdated)
+                    .FirstOrDefault();
+
+                _activeReturnPolicy = activePolicy ?? new ReturnPolicy
+                {
+                    Title = "По умолчанию",
+                    ReturnPeriodDays = 14,
+                    GeneralConditions = "Товар должен быть в оригинальной упаковке и не иметь следов использования."
+                };
+
+                if (_activeReturnPolicy != null)
+                {
+                    // ReturnPolicyTextBlock уже проверен на null выше
+                    ReturnPolicyTextBlock.Text = 
+                        $"Срок возврата: {_activeReturnPolicy.ReturnPeriodDays} дней\n\n" +
+                        $"{_activeReturnPolicy.GeneralConditions}\n\n" +
+                        $"Условия возврата средств:\n{_activeReturnPolicy.RefundPolicy}\n\n" +
+                        $"Условия обмена товара:\n{_activeReturnPolicy.ExchangePolicy}";
+
+                    if (!string.IsNullOrEmpty(_activeReturnPolicy.ExcludedCategories))
+                    {
+                        ReturnPolicyTextBlock.Text += $"\n\nКатегории товаров, которые не подлежат возврату:\n{_activeReturnPolicy.ExcludedCategories}";
+                    }
+                }
+                else
+                {
+                    ReturnPolicyTextBlock.Text = "Правила возврата не настроены. Пожалуйста, обратитесь к администратору.";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке правил возврата: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Загрузка запросов на возврат пользователя
+        private void LoadUserReturnRequests()
+        {
+            try
+            {
+                var returnRequests = _context.ReturnRequests
+                    .Include(rr => rr.OrderItem)
+                    .ThenInclude(oi => oi.Product)
+                    .Include(rr => rr.OrderItem.Order)
+                    .Where(rr => rr.OrderItem.Order.UserId == _currentUser.Id)
+                    .ToList();
+
+                // Применение фильтров и сортировки
+                ApplyFiltersAndSort(returnRequests);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке запросов на возврат: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Применение фильтров и сортировки к списку запросов
+        private void ApplyFiltersAndSort(List<ReturnRequest> returnRequests)
+        {
+            if (StatusFilterComboBox != null && StatusFilterComboBox.SelectedIndex > 0)
+            {
+                var selectedStatus = (ReturnStatus)((dynamic)StatusFilterComboBox.SelectedItem).Value;
+                returnRequests = returnRequests.Where(rr => rr.Status == selectedStatus).ToList();
+            }
+
+            if (SortComboBox != null)
+            {
+                switch (SortComboBox.SelectedIndex)
+                {
+                    case 0: // Дата (новые)
+                        returnRequests = returnRequests.OrderByDescending(rr => rr.RequestDate).ToList();
+                        break;
+                    case 1: // Дата (старые)
+                        returnRequests = returnRequests.OrderBy(rr => rr.RequestDate).ToList();
+                        break;
+                    case 2: // Статус
+                        returnRequests = returnRequests.OrderBy(rr => rr.Status).ToList();
+                        break;
+                }
+            }
+
+            ReturnRequestsDataGrid.ItemsSource = returnRequests;
+        }
+
+        // Обработчик изменения выбранного заказа
+        private void OrdersComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (OrdersComboBox.SelectedItem == null || OrderItemsComboBox == null)
+                    return;
+
+                var selectedOrder = (Order)OrdersComboBox.SelectedItem;
+                
+                // Загрузка товаров из выбранного заказа
+                var orderItems = selectedOrder.OrderItems.ToList();
+                
+                OrderItemsComboBox.ItemsSource = orderItems;
+                OrderItemsComboBox.DisplayMemberPath = "Product.Name";
+                OrderItemsComboBox.SelectedValuePath = "Id";
+                
+                if (orderItems.Count > 0)
+                    OrderItemsComboBox.SelectedIndex = 0;
+                
+                // Загрузка товаров для обмена
+                LoadExchangeProducts();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при выборе заказа: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Загрузка товаров для обмена
+        private void LoadExchangeProducts()
+        {
+            try
+            {
+                if (ExchangeProductComboBox == null)
+                    return;
+
+                // Получение всех товаров для обмена
+                var products = _context.Products
+                    .Where(p => p.IsAvailable && p.StockQuantity > 0)
+                    .OrderBy(p => p.Name)
+                    .ToList();
+
+                ExchangeProductComboBox.ItemsSource = products;
+                ExchangeProductComboBox.DisplayMemberPath = "Name";
+                ExchangeProductComboBox.SelectedValuePath = "Id";
+                
+                if (products.Count > 0)
+                    ExchangeProductComboBox.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке товаров для обмена: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Добавляем метод для проверки инициализации элементов управления
+        private bool IsControlInitialized(params object[] controls)
+        {
+            foreach (var control in controls)
+            {
+                if (control == null)
+                    return false;
+            }
+            return true;
+        }
+
+        // Обработчик изменения типа возврата
+        private void ReturnTypeRadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            if (!IsControlInitialized(ExchangeRadioButton, ExchangeProductLabel, ExchangeProductComboBox))
+                return;
+                
+            bool isExchange = ExchangeRadioButton.IsChecked ?? false;
+            ExchangeProductLabel.Visibility = isExchange ? Visibility.Visible : Visibility.Collapsed;
+            ExchangeProductComboBox.Visibility = isExchange ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        // Обработчик кнопки отмены
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            ClearForm();
+        }
+
+        // Очистка формы
+        private void ClearForm()
+        {
+            OrdersComboBox.SelectedIndex = -1;
+            OrderItemsComboBox.SelectedIndex = -1;
+            ReturnReasonComboBox.SelectedIndex = 0;
+            
+            if (RefundRadioButton != null)
+                RefundRadioButton.IsChecked = true;
+                
+            if (CommentsTextBox != null)
+                CommentsTextBox.Text = string.Empty;
+        }
+
+        // Обработчик кнопки отправки запроса
+        private void SubmitButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Проверка выбора заказа и товара
+                if (OrdersComboBox.SelectedItem == null || OrderItemsComboBox.SelectedItem == null)
+                {
+                    MessageBox.Show("Пожалуйста, выберите заказ и товар для возврата.", "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Создание нового запроса на возврат
+                var returnRequest = new ReturnRequest
+                {
+                    OrderItemId = (int)OrderItemsComboBox.SelectedValue,
+                    RequestDate = DateTime.Now,
+                    Status = ReturnStatus.Pending,
+                    Reason = (ReturnReason)((dynamic)ReturnReasonComboBox.SelectedItem).Value,
+                    Comments = CommentsTextBox?.Text,
+                    IsExchange = ExchangeRadioButton.IsChecked ?? false
+                };
+
+                // Если выбран обмен, сохраняем id нового товара
+                if (returnRequest.IsExchange && ExchangeProductComboBox.SelectedItem != null)
+                {
+                    returnRequest.ExchangeProductId = (int)ExchangeProductComboBox.SelectedValue;
+                }
+
+                // Сохранение запроса в базу данных
+                _context.ReturnRequests.Add(returnRequest);
+                _context.SaveChanges();
+
+                MessageBox.Show("Ваш запрос на возврат успешно отправлен. Мы свяжемся с вами в ближайшее время.", 
+                    "Запрос отправлен", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // Очистка формы
+                ClearForm();
+                
+                // Обновление списка запросов
+                LoadUserReturnRequests();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при отправке запроса: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Обработчик изменения фильтра статуса
+        private void StatusFilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            LoadUserReturnRequests();
+        }
+
+        // Обработчик изменения сортировки
+        private void SortComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            LoadUserReturnRequests();
+        }
+
+        // Обработчик выбора запроса в таблице
+        private void ReturnRequestsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Можно добавить логику для отображения деталей выбранного запроса
+        }
+
+        // Получение текстового представления причины возврата
+        private string GetReturnReasonDisplay(ReturnReason reason)
+        {
+            switch (reason)
+            {
+                case ReturnReason.Defective:
+                    return "Товар с дефектом";
+                case ReturnReason.WrongItem:
+                    return "Получен неверный товар";
+                case ReturnReason.NotAsDescribed:
+                    return "Товар не соответствует описанию";
+                case ReturnReason.NoLongerNeeded:
+                    return "Товар больше не нужен";
+                default:
+                    return reason.ToString();
+            }
+        }
+    }
+}

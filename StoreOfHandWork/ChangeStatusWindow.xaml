@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window x:Class="StoreOfHandWork.ChangeStatusWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Изменить статус заказа" 
+        Height="300" 
+        Width="400"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Изменение статуса заказа" 
+                   HorizontalAlignment="Center" 
+                   FontSize="18" 
+                   Margin="0,10,0,20"
+                   Grid.Row="0"/>
+
+        <StackPanel Grid.Row="1" Margin="20">
+            <TextBlock Text="Выберите новый статус:" 
+                       Margin="0,0,0,10"/>
+            <ComboBox x:Name="StatusComboBox" 
+                      Margin="0,0,0,20"/>
+            <StackPanel Orientation="Horizontal" 
+                        HorizontalAlignment="Center">
+                <Button Content="Сохранить" 
+                        Click="SaveButton_Click" 
+                        Width="100" 
+                        Margin="0,0,10,0"
+                        Style="{StaticResource PrimaryButton}"/>
+                <Button Content="Отмена" 
+                        Click="CancelButton_Click" 
+                        Width="100"
+                        Style="{StaticResource SecondaryButton}"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

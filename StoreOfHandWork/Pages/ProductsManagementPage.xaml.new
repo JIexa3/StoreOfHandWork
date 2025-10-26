@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page x:Class="StoreOfHandWork.Pages.ProductsManagementPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Управление товарами">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Верхняя панель с поиском и кнопками -->
+        <Grid Grid.Row="0" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox x:Name="SearchBox"
+                     Grid.Column="0"
+                     Margin="0,0,10,0"
+                     Tag="Поиск товаров..."
+                     TextChanged="SearchBox_TextChanged"/>
+
+            <Button Grid.Column="1"
+                    Content="Добавить товар"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Click="AddProduct_Click"
+                    Margin="0,0,10,0"/>
+
+            <Button Grid.Column="2"
+                    Content="Обновить"
+                    Style="{StaticResource SecondaryButtonStyle}"
+                    Click="RefreshProducts_Click"/>
+        </Grid>
+
+        <!-- Таблица товаров -->
+        <DataGrid x:Name="ProductsGrid"
+                  Grid.Row="1"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  SelectionUnit="FullRow"
+                  GridLinesVisibility="Horizontal"
+                  RowHeaderWidth="0"
+                  Background="White"
+                  BorderThickness="1"
+                  BorderBrush="{StaticResource BorderColor}">
+            
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" 
+                                  Binding="{Binding Id}" 
+                                  Width="70"/>
+                <DataGridTextColumn Header="Название" 
+                                  Binding="{Binding Name}" 
+                                  Width="200"/>
+                <DataGridTextColumn Header="Описание" 
+                                  Binding="{Binding Description}" 
+                                  Width="250"/>
+                <DataGridTextColumn Header="Цена" 
+                                  Binding="{Binding Price, StringFormat={}{0:C}}" 
+                                  Width="100"/>
+                <DataGridTextColumn Header="Категория" 
+                                  Binding="{Binding Category}" 
+                                  Width="120"/>
+                <DataGridTextColumn Header="Количество" 
+                                  Binding="{Binding StockQuantity}" 
+                                  Width="100"/>
+                <DataGridTextColumn Header="Дата создания" 
+                                  Binding="{Binding CreatedDate, StringFormat={}{0:dd.MM.yyyy}}" 
+                                  Width="120"/>
+                <DataGridCheckBoxColumn Header="Активен" 
+                                      Binding="{Binding IsActive}" 
+                                      Width="80"/>
+                <DataGridTemplateColumn Header="Действия" 
+                                      Width="120">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="✎"
+                                        Click="EditProduct_Click"
+                                        Style="{StaticResource IconButtonStyle}"
+                                        Margin="0,0,5,0"
+                                        ToolTip="Редактировать"/>
+                                <Button Content="✕"
+                                        Click="DeleteProduct_Click"
+                                        Style="{StaticResource DangerIconButtonStyle}"
+                                        ToolTip="Удалить"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Page>
