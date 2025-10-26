@@ -1,0 +1,13 @@
+1) Разархивировать папку на свой компьютер
+2) Открыть SQL Server Management Studio
+3) Экспортировать из папки в Sql файл .backpack с помощью: импорта приложения уровня данных
+4) Зайди в папку :StoreOfHandWork- и открыть StoreOfHandWork.sln
+5)После загрузки всех файлов найти файлы :ApplicationDbContext.cs и appsettings.json
+6) Найти строки подключения:  optionsBuilder.UseSqlServer("Server=HOME-PC;Database=HandWorkDb;Trusted_Connection=True;TrustServerCertificate=True");  
+  "DefaultConnection": "Server=HOME-PC;Database=StoreOfHandWork;Trusted_Connection=True;MultipleActiveResultSets=true"
+
+Взять строку подключения из SQL Server Management Studio и вставить в строки подключения
+7)Можно успешно возвращаться и запускать через wpf по кнопки:Запуск StoreOfHandWork
+8)Исходные данные: 
+Вход для Администратора:admin@store.com(почту) admin123(пароль) и можете пользоваться возможностями админа
+Вход для пользователя через регистрацию.
